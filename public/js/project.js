@@ -1,7 +1,7 @@
 angular.module('project', ['firebase']).
   value('fbURL', 'https://drdocker.firebaseIO.com/').
-  factory('Projects', function(drdockerCollection, fbURL) {
-    return drdockerCollection(fbURL);
+  factory('Projects', function(angularFireCollection, fbURL) {
+    return angularFireCollection(fbURL);
   }).
   config(function($routeProvider) {
     $routeProvider.
@@ -12,10 +12,11 @@ angular.module('project', ['firebase']).
       otherwise({redirectTo:'/'});
   });
  
-function LoginCtrl($scope, Projects) {
-  var auth = new FirebaseSimpleLogin(Projects, function(error, user) {
+function LoginCtrl($scope, $location, $routeParams, angularFire, fbURL) {
+  var auth = new FirebaseSimpleLogin(new Firebase(fbURL), function(error, user) {
     if (error) {
       // an error occurred while attempting login
+      $scope.loginStatus = "Error logging in:" + error.code + " access!"
       console.log(error);
     } else if (user) {
       // user authenticated with Firebase
@@ -24,6 +25,12 @@ function LoginCtrl($scope, Projects) {
       // user is logged out
     }
   });
+  
+  $scope.login = function() {
+    auth.login('twitter', {
+      rememberMe: true
+    });
+  };
 }
 
 function ListCtrl($scope, Projects) {
