@@ -3,7 +3,7 @@ angular.module('project', ['firebase']).
   config(function($routeProvider) {
     $routeProvider.
       when('/list', {controller:ListCtrl, templateUrl:'list.html'}).
-      when('/edit/:appId', {controller:EditCtrl, templateUrl:'detail.html'}).
+      when('/edit/:appName', {controller:EditCtrl, templateUrl:'detail.html'}).
       when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
       when('/', {controller:LoginCtrl, templateUrl:'login.html'}).
       otherwise({redirectTo:'/'});
@@ -38,6 +38,11 @@ function LoginCtrl($scope, $rootScope, $location, angularFireAuth, fbURL) {
     });
   };
 
+  $rootScope.logout = function() {
+    angularFireAuth.logout();
+    $location.path("/");
+  };
+
   $scope.$on("angularFireAuth:error", function(evt, err) {
     console.error("twitter login error:"+err);
     $scope.loginStatus = ''+err;
@@ -53,6 +58,8 @@ function LoginCtrl($scope, $rootScope, $location, angularFireAuth, fbURL) {
 
 function ListCtrl($scope, $rootScope, $location, angularFire, fbURL) {
   //console.log("user: "+JSON.stringify($rootScope.user));
+  $scope.logout = $rootScope.logout;
+
   $scope.user = $rootScope.user;
   var ref = new Firebase(fbURL);
   angularFire(ref, $scope, 'apps').then(function() {
@@ -81,26 +88,50 @@ function CreateCtrl($scope, $location, $timeout, $rootScope, angularFire, fbURL)
       picture: $rootScope.user.photos[0].value
     };
 
+    $scope.app.name = $scope.appName;
     $scope.apps.push($scope.app);
 
-    $location.path("/");
+    $location.path("/list");
   }
 }
  
 function EditCtrl($scope, $location, $routeParams, angularFire, fbURL) {
-  angularFire(fbURL + $routeParams.projectId, $scope, 'remote', {}).
+  angularFire(new Firebase(fbURL), $scope, 'apps').
   then(function() {
-    $scope.app = angular.copy($scope.remote);
-    $scope.project.$id = $routeParams.projectId;
-    $scope.isClean = function() {
-      return angular.equals($scope.remote, $scope.project);
+    var found = false;
+    for (var i = 0; i < $scope.apps.length; i++) {
+      if ($scope.apps[i] != null && $scope.apps[i].name === $routeParams.appName) {
+        $scope.app = $scope.apps[i];
+        found = true;
+        break;
+      }
     }
+
+    if (!found) {
+      $location.path("/new");
+      return;
+    }
+
+    $scope.appName = $scope.app.name;
+    $scope.disabled = "disabled";
+
+    $scope.isClean = function() {
+      return $routeParams.appName == $scope.appName;
+    }
+
     $scope.destroy = function() {
-      $scope.remote = null;
-      $location.path('/');
+      for (var i = 0; i < $scope.apps.length; i++) {
+        if ($scope.apps[i] != null && $scope.apps[i].name == $scope.app.name) {
+          $scope.apps.splice(i, 1);
+          i--;
+          break;
+        }
+      }
+      $location.path('/list');
     };
+
     $scope.save = function() {
-      $scope.remote = angular.copy($scope.project);
+      $scope.app.name = $scope.appName;
       $location.path('/');
     };
   });

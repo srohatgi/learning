@@ -1,7 +1,7 @@
 <form name="myForm">
   <div class="form-group" ng-class="{error: myForm.name.$invalid}">
     <label for="appName">Application name</label>
-    <input type="text" name="name" class="form-control" ng-model="app.name" id="appName" required>
+    <input type="text" name="name" class="form-control" ng-model="appName" id="appName" required ng-disabled="app.name != null">
     <span ng-show="myForm.name.$error.required" class="help-inline">
       Required
     </span>
@@ -23,8 +23,8 @@
  
   <br>
   <a href="#/" class="btn">Cancel</a>
-  <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
+  <button ng-click="save()" ng-disabled="myForm.$invalid"
           class="btn btn-primary">Save</button>
   <button ng-click="destroy()"
-          ng-show="app.$id" class="btn btn-danger">Delete</button>
+          ng-show="app.name" class="btn btn-danger">Delete</button>
 </form>
