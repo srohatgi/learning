@@ -1,8 +1,5 @@
 angular.module('project', ['firebase']).
   value('fbURL', 'https://drdocker.firebaseIO.com/').
-  factory('Projects', function(angularFireCollection, fbURL) {
-    return angularFireCollection(fbURL);
-  }).
   config(function($routeProvider) {
     $routeProvider.
       when('/list', {controller:ListCtrl, templateUrl:'list.html'}).
@@ -10,31 +7,55 @@ angular.module('project', ['firebase']).
       when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
       when('/', {controller:LoginCtrl, templateUrl:'login.html'}).
       otherwise({redirectTo:'/'});
-  });
+  }).run( function($rootScope, $location) {
+    // register listener to watch route changes
+    $rootScope.$on( "$locationChangeStart", function(event, next, current) {
+      if ( $rootScope.user == null ) {
+        // no logged user, we should be going to #login
+        if ( next.templateUrl == "partials/login.html" ) {
+          // already going to #login, no redirect needed
+        } else {
+          // not going to #login, we should redirect now
+          $location.path( "/" );
+        }
+      }         
+    });
+ });
  
-function LoginCtrl($scope, $location, $routeParams, angularFire, fbURL) {
-  var auth = new FirebaseSimpleLogin(new Firebase(fbURL), function(error, user) {
-    if (error) {
-      // an error occurred while attempting login
-      $scope.loginStatus = "Error logging in:" + error.code + " access!"
-      console.log(error);
-    } else if (user) {
-      // user authenticated with Firebase
-      console.log('User ID: ' + user.id + ', Provider: ' + user.provider);
-    } else {
-      // user is logged out
-    }
-  });
-  
+function LoginCtrl($scope, $rootScope, $location, angularFireAuth, fbURL) {
+
+  //console.log("fbURL: "+fbURL);
+  $scope.loginStatus = "";
+  angularFireAuth.initialize(fbURL, {scope: $scope, name: "user"});
+
+  //var ref = new Firebase(fbURL);
+
+  //angularFireAuth.initialize(ref, {scope: $scope, name: "user"});
+
   $scope.login = function() {
-    auth.login('twitter', {
+    angularFireAuth.login('twitter', {
       rememberMe: true
     });
   };
+
+  $scope.$on("angularFireAuth:error", function(evt, err) {
+    console.error("twitter login error:"+err);
+    $scope.loginStatus = ''+err;
+  });
+
+  $scope.$on("angularFireAuth:login", function(evt, user) {
+    console.log("user: "+JSON.stringify(user));
+    $rootScope.user = user;
+    $location.path("/list");
+  });
+
 }
 
-function ListCtrl($scope, Projects) {
-  $scope.projects = Projects;
+function ListCtrl($scope, $rootScope, $location, angularFire, fbURL) {
+  //console.log("user: "+JSON.stringify($rootScope.user));
+  $scope.user = $rootScope.user;
+  //var ref = new Firebase(fbURL+'/'+$scope.user+'/projects');
+  //angularFire(ref, $scope, 'projects');
 }
  
 function CreateCtrl($scope, $location, $timeout, Projects) {
