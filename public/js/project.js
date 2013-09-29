@@ -1,9 +1,9 @@
 angular.module('project', ['firebase']).
-  value('fbURL', 'https://drdocker.firebaseIO.com/').
+  value('fbURL', 'https://drdocker.firebaseIO.com/apps').
   config(function($routeProvider) {
     $routeProvider.
       when('/list', {controller:ListCtrl, templateUrl:'list.html'}).
-      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
+      when('/edit/:appId', {controller:EditCtrl, templateUrl:'detail.html'}).
       when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
       when('/', {controller:LoginCtrl, templateUrl:'login.html'}).
       otherwise({redirectTo:'/'});
@@ -54,22 +54,31 @@ function LoginCtrl($scope, $rootScope, $location, angularFireAuth, fbURL) {
 function ListCtrl($scope, $rootScope, $location, angularFire, fbURL) {
   //console.log("user: "+JSON.stringify($rootScope.user));
   $scope.user = $rootScope.user;
-  //var ref = new Firebase(fbURL+'/'+$scope.user+'/projects');
-  //angularFire(ref, $scope, 'projects');
+  var ref = new Firebase(fbURL);
+  angularFire(ref, $scope, 'apps');
 }
  
-function CreateCtrl($scope, $location, $timeout, Projects) {
+function CreateCtrl($scope, $location, $timeout, $rootScope, angularFire, fbURL) {
+  var ref = new Firebase(fbURL);
+  angularFire(ref, $scope, 'apps');
+
   $scope.save = function() {
-    Projects.add($scope.project, function() {
-      $timeout(function() { $location.path('/'); });
-    });
+    $scope.app.createdBy = { 
+      twitter: $rootScope.user.username,
+      display: $rootScope.user.displayName,
+      picture: $rootScope.user.photos[0].value
+    };
+
+    $scope.apps.push($scope.app);
+
+    $location.path("/");
   }
 }
  
 function EditCtrl($scope, $location, $routeParams, angularFire, fbURL) {
   angularFire(fbURL + $routeParams.projectId, $scope, 'remote', {}).
   then(function() {
-    $scope.project = angular.copy($scope.remote);
+    $scope.app = angular.copy($scope.remote);
     $scope.project.$id = $routeParams.projectId;
     $scope.isClean = function() {
       return angular.equals($scope.remote, $scope.project);

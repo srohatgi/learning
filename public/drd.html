@@ -10,15 +10,20 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Sirin+Stencil">
+        <link rel="stylesheet" href="css/bootstrap.css">
         <style>
             body {
                 padding-top: 50px;
                 padding-bottom: 20px;
             }
+            .title_font {
+                font-family: 'Sirin Stencil';
+                font-size: 48px;
+            }
         </style>
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/font-awesome.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.css">
         <link rel="stylesheet" href="css/main.css">
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
@@ -36,10 +41,10 @@
         <![endif]-->
     <div class="container" style="width:60%">
       <div>
-      <h1>Dr. Docker</h1>
+      <h1 class="title_font">Dr. Docker</h1>
         <blockquote>
-          <p>An easy way to <strong>run</strong> open source cloud applications</p>
-          <p><small>A devops productivity tool by Savvis Labs</small></p>
+          <p><strong>Immediately run</strong> open source cloud applications</p>
+          <small>A devops productivity tool by Savvis Labs</small>
         </blockquote>
       </div>
       <div ng-view></div>

@@ -1,54 +1,33 @@
-<p>Hello <strong>{{user.displayName}}</strong>!</p>
+<img ng-src="{{user.photos[0].value}}" alt="{{user.displayName}}" class="img-circle"/>
 <table class="table table-striped">
   <thead>
     <tr>
       <th>
-        Cloud Applications
+        Cloud Application
       </th>
       <th>
-        Name
+        Description
       </th>
       <th>
-        Github Repo
+        By
       </th>
-      <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
+      <th>
+        <a href="#/new"><i class="icon-plus-sign"></i></a>
+      </th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td><a href="http://localhost:3000/index.html">patient-prescription</a></td>
+    <tr ng-repeat="app in apps">
+      <td><a href="{{app.site}}">{{app.name}}</a></td>
       <td>
-        <input type="number" style="width: 40px; padding: 1px" value="1"> 
+        <p>{{app.description}}&nbsp;<a href="{{app.site}}"><i class="icon-link"></i></a>
+</p> 
       </td>
       <td>
-        <p> instances running </p> 
+        <a href="http://twitter.com/{{app.createdBy.twitter}}"><img ng-src="{{app.createdBy.picture}}" class="img-circle"/></a>
       </td>
       <td>
-        <input type="button" style="width: 40px; padding: 1px" class="btn btn-danger" value="stop"> 
-      </td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/index.html">insurance-claims</a></td>
-      <td>
-        <input type="number" style="width: 40px; padding: 1px" value="1"> 
-      </td>
-      <td>
-        <p> instances running </p> 
-      </td>
-      <td>
-        <input type="button" style="width: 40px; padding: 1px" class="btn btn-danger" value="stop"> 
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <input type="text" style="width: 200px; padding: 1px" placeholder="App name"/>
-      </td>
-      <td></td>
-      <td>
-        <input type="text" style="width: 300px; padding: 1px" placeholder="Github url"/>
-      </td>
-      <td>
-        <input type="button" style="width: 100px; padding: 1px" class="btn btn-success" value="Boot it up!"/>
+        <a href="#/edit/{{app.id}}"><i class="icon-pencil"></i></a>
       </td>
     </tr>
   </tbody>
