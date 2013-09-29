@@ -1,4 +1,7 @@
-<img ng-src="{{user.photos[0].value}}" alt="{{user.displayName}}" class="img-circle"/>
+<button type="submit" class="btn pull-right">
+  <i class="icon-off"></i>&nbsp;Logout
+</button>
+
 <table class="table table-striped">
   <thead>
     <tr>
@@ -20,14 +23,13 @@
     <tr ng-repeat="app in apps">
       <td><a href="{{app.site}}">{{app.name}}</a></td>
       <td>
-        <p>{{app.description}}&nbsp;<a href="{{app.site}}"><i class="icon-link"></i></a>
-</p> 
+        <p><a href="{{app.site}}"><i class="icon-github"></i></a>&nbsp;{{app.description}}</p> 
       </td>
       <td>
         <a href="http://twitter.com/{{app.createdBy.twitter}}"><img ng-src="{{app.createdBy.picture}}" class="img-circle"/></a>
       </td>
       <td>
-        <a href="#/edit/{{app.id}}"><i class="icon-pencil"></i></a>
+        <a href="#/edit/{{app.name}}"><i class="icon-pencil"></i></a>
       </td>
     </tr>
   </tbody>

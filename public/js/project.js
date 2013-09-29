@@ -55,7 +55,19 @@ function ListCtrl($scope, $rootScope, $location, angularFire, fbURL) {
   //console.log("user: "+JSON.stringify($rootScope.user));
   $scope.user = $rootScope.user;
   var ref = new Firebase(fbURL);
-  angularFire(ref, $scope, 'apps');
+  angularFire(ref, $scope, 'apps').then(function() {
+    console.log("apps:"+JSON.stringify($scope.apps));
+    if ($scope.apps == null) return;
+
+    for (var i = 0; i < $scope.apps.length; i++) {
+      if ($scope.apps[i] == null) {
+        $scope.apps.splice(i, 1);
+        i--;
+      }
+    }
+  });
+
+  //console.log("apps:"+JSON.stringify($scope.apps));
 }
  
 function CreateCtrl($scope, $location, $timeout, $rootScope, angularFire, fbURL) {
